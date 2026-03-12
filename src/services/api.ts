@@ -9,7 +9,7 @@ const api = axios.create({
 
 export const fetchPlaces = async (): Promise<Place[]> => {
   const response = await api.get<ApiResponse>(
-    "/lieux-culturels-a-paris/records?limit=30"
+    "/que-faire-a-paris-/records?limit=20"
   )
 
   return response.data.results
