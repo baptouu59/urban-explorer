@@ -1,15 +1,22 @@
-export interface Coordinates {
-  lat: number
-  lon: number
-}
-
+// src/types/index.ts
 export interface Place {
-  recordid: string
-  nom_usuel: string
-  adresse: string
-  coordonnees_geo: Coordinates
+  id: string;
+  nom_usuel: string;
+  adresse: string;
+  lat: number;
+  lon: number;
+  image: string;
+  description: string;
+  dateText?: string;
 }
 
-export interface ApiResponse {
-  results: Place[]
-}
+export type DiscoverStackParamList = {
+  Discover: undefined;
+  PlaceDetail: { place: Place };
+};
+
+export type TabParamList = {
+  Découverte: undefined;
+  Carte: undefined;
+  Profil: undefined;
+};
