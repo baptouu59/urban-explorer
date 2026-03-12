@@ -1,4 +1,5 @@
-import { View, Text, Image, Button, StyleSheet } from "react-native"
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native"
+import { Colors, Spacing, Radius, Shadows } from "../constants/Theme"
 
 interface Props {
   title: string
@@ -14,31 +15,83 @@ export default function LieuCard({
   onPress
 }: Props) {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={onPress}
+      activeOpacity={0.9}
+    >
       <Image source={{ uri: image }} style={styles.image} />
+      
+      <View style={styles.content}>
+        <Text style={styles.title} numberOfLines={2}>{title}</Text>
+        
+        <View style={styles.addressContainer}>
+          <Text style={styles.addressIcon}>📍</Text>
+          <Text style={styles.address} numberOfLines={1}>{address}</Text>
+        </View>
 
-      <Text style={styles.title}>{title}</Text>
-
-      <Text>{address}</Text>
-
-      <Button title="Voir plus" onPress={onPress} />
-    </View>
+        <View style={styles.footer}>
+          <Text style={styles.moreInfo}>Voir les détails</Text>
+          <Text style={styles.arrowIcon}>→</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
   card: {
-    margin: 10,
-    padding: 10,
-    backgroundColor: "#fff",
-    borderRadius: 10
+    marginHorizontal: Spacing.md,
+    marginVertical: Spacing.sm,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    ...Shadows.md,
   },
   image: {
-    height: 120,
-    borderRadius: 10
+    height: 180,
+    width: '100%',
+  },
+  content: {
+    padding: Spacing.md,
   },
   title: {
     fontSize: 18,
-    fontWeight: "bold"
+    fontWeight: "700",
+    color: Colors.text,
+    marginBottom: Spacing.xs,
+    lineHeight: 24,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  addressIcon: {
+    fontSize: 12,
+    marginRight: 4,
+  },
+  address: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingTop: Spacing.sm,
+  },
+  moreInfo: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  arrowIcon: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: 'bold',
   }
 })

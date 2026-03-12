@@ -12,7 +12,6 @@ export default function DiscoverStack() {
       <Stack.Screen
         name="Discover"
         component={DiscoverScreen}
-        options={{ title: "Découverte" }}
       />
 
       <Stack.Screen

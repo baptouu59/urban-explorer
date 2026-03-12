@@ -26,16 +26,18 @@ export default function MapScreen() {
         longitudeDelta: 0.1
       }}
     >
-      {places.map((place) => (
-        <Marker
-          key={place.id}
-          coordinate={{
-            latitude: place.lat_lon?.lat || 0,
-            longitude: place.lat_lon?.lon || 0 
-          }}
-          title={place.title}
-        />
-      ))}
+      {places
+        .filter((place) => place.lat_lon && place.lat_lon.lat && place.lat_lon.lon)
+        .map((place) => (
+          <Marker
+            key={place.id}
+            coordinate={{
+              latitude: place.lat_lon!.lat,
+              longitude: place.lat_lon!.lon
+            }}
+            title={place.title}
+          />
+        ))}
     </MapView>
   )
 }
