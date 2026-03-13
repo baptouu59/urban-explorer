@@ -6,12 +6,14 @@ interface Props {
   visible: boolean
   placeName: string
   onClose: () => void
+  onConfirm: (date: string) => void
 }
 
 export default function CalendarModal({
   visible,
   placeName,
-  onClose
+  onClose,
+  onConfirm
 }: Props) {
   const [date, setDate] = useState<string | null>(null)
 
@@ -53,7 +55,17 @@ export default function CalendarModal({
         )}
 
         <View style={styles.buttonContainer}>
-          <Button title="Confirmer" onPress={onClose} color="#007AFF" />
+          <Button 
+            title="Confirmer" 
+            onPress={() => {
+              if (date) {
+                onConfirm(date)
+                onClose()
+              }
+            }} 
+            color="#007AFF" 
+            disabled={!date}
+          />
           <View style={{ height: 10 }} />
           <Button title="Annuler" onPress={onClose} color="#FF3B30" />
         </View>

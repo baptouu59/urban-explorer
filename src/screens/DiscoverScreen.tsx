@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
-import { FlatList, ActivityIndicator, View, Text, StyleSheet, SafeAreaView, StatusBar } from "react-native"
+import { FlatList, ActivityIndicator, View, Text, StyleSheet, SafeAreaView, StatusBar, TextInput } from "react-native"
 import { fetchPlaces } from "../services/api"
 import LieuCard from "../components/LieuCard"
 import { Place } from "../types"
-import { Colors, Spacing } from "../constants/Theme"
+import { Colors, Spacing, Radius, Shadows } from "../constants/Theme"
 
 export default function DiscoverScreen({ navigation }: any) {
   const [places, setPlaces] = useState<Place[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
     const load = async () => {
@@ -24,6 +25,10 @@ export default function DiscoverScreen({ navigation }: any) {
     load()
   }, [])
 
+  const filteredPlaces = places.filter(place => 
+    place.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -39,10 +44,21 @@ export default function DiscoverScreen({ navigation }: any) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Explorer</Text>
         <Text style={styles.headerSubtitle}>Découvrez les meilleurs endroits à Paris</Text>
+        
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Rechercher par nom..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor={Colors.textSecondary}
+          />
+        </View>
       </View>
       
       <FlatList
-        data={places}
+        data={filteredPlaces}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
@@ -92,6 +108,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.textSecondary,
     marginTop: 4,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    ...Shadows.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  searchIcon: {
+    fontSize: 18,
+    marginRight: Spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    height: 48,
+    color: Colors.text,
+    fontSize: 16,
   },
   listContent: {
     paddingVertical: Spacing.sm,

@@ -1,7 +1,10 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, SafeAreaView, StatusBar } from "react-native"
 import { useState, useEffect } from "react"
 import * as ImagePicker from 'expo-image-picker'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Colors, Spacing, Radius, Shadows } from "../constants/Theme"
+
+const AVATAR_LOCATION_KEY = 'user_avatar_uri'
 
 export default function ProfileScreen() {
     const [avatar, setAvatar] = useState<string | null>(null)
@@ -11,6 +14,16 @@ export default function ProfileScreen() {
             const { status } = await ImagePicker.requestCameraPermissionsAsync()
             if (status !== 'granted') {
                 Alert.alert("Permission requise", "L'accès à la caméra est nécessaire pour prendre un selfie.")
+            }
+
+            // Load persisted avatar
+            try {
+                const savedAvatar = await AsyncStorage.getItem(AVATAR_LOCATION_KEY)
+                if (savedAvatar) {
+                    setAvatar(savedAvatar)
+                }
+            } catch (e) {
+                console.error("Failed to load avatar from storage", e)
             }
         })()
     }, [])
@@ -23,7 +36,13 @@ export default function ProfileScreen() {
         })
 
         if (!result.canceled) {
-            setAvatar(result.assets[0].uri)
+            const uri = result.assets[0].uri
+            setAvatar(uri)
+            try {
+                await AsyncStorage.setItem(AVATAR_LOCATION_KEY, uri)
+            } catch (e) {
+                console.error("Failed to save avatar to storage", e)
+            }
         }
     }
 

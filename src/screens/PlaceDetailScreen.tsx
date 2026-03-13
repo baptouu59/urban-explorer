@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from "react-native"
-import { useState } from "react"
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert } from "react-native"
+import { useState, useEffect } from "react"
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import CalendarModal from "../components/CalendarModal"
 import { Place } from "../types"
 import { Colors, Spacing, Radius, Shadows } from "../constants/Theme"
@@ -7,6 +8,32 @@ import { Colors, Spacing, Radius, Shadows } from "../constants/Theme"
 export default function PlaceDetailScreen({ route, navigation }: any) {
   const { place }: { place: Place } = route.params
   const [open, setOpen] = useState(false)
+  const [plannedDate, setPlannedDate] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadPlannedDate = async () => {
+      try {
+        const savedDate = await AsyncStorage.getItem(`visit_${place.id}`)
+        if (savedDate) {
+          setPlannedDate(savedDate)
+        }
+      } catch (e) {
+        console.error("Failed to load planned date", e)
+      }
+    }
+    loadPlannedDate()
+  }, [place.id])
+
+  const handleConfirmDate = async (date: string) => {
+    try {
+      await AsyncStorage.setItem(`visit_${place.id}`, date)
+      setPlannedDate(date)
+      Alert.alert("Visite planifiée", `Votre visite pour "${place.title}" a été enregistrée pour le ${date}.`)
+    } catch (e) {
+      console.error("Failed to save planned date", e)
+      Alert.alert("Erreur", "Impossible d'enregistrer la visite.")
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,6 +75,16 @@ export default function PlaceDetailScreen({ route, navigation }: any) {
                     </Text>
                 </View>
 
+                {plannedDate && (
+                  <View style={[styles.section, styles.plannedDateContainer]}>
+                    <Text style={styles.sectionTitle}>Visite planifiée</Text>
+                    <View style={styles.row}>
+                      <Text style={styles.icon}>🗓️</Text>
+                      <Text style={styles.plannedDateText}>{plannedDate}</Text>
+                    </View>
+                  </View>
+                )}
+
                 <View style={styles.statsRow}>
                     <View style={styles.statCard}>
                         <Text style={styles.statIcon}>⏱️</Text>
@@ -81,6 +118,7 @@ export default function PlaceDetailScreen({ route, navigation }: any) {
             visible={open}
             placeName={place.title}
             onClose={() => setOpen(false)}
+            onConfirm={handleConfirmDate}
         />
     </SafeAreaView>
   )
@@ -150,6 +188,18 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: Spacing.lg,
+  },
+  plannedDateContainer: {
+    backgroundColor: Colors.primary + '10',
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.primary + '30',
+  },
+  plannedDateText: {
+    fontSize: 16,
+    color: Colors.primary,
+    fontWeight: 'bold',
   },
   sectionTitle: {
     fontSize: 18,
